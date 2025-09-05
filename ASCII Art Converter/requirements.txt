@@ -1,0 +1,3 @@
+# ASCII Art Converter Dependencies
+Pillow>=9.0.0
+pyfiglet>=0.8.0
