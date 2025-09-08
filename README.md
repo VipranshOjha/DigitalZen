@@ -19,7 +19,7 @@ Each project is tagged with its complexity and time commitment:
 ## Current Projects
 
 ### Text Art 📝
-- **[ASCII Art Converter](text-art/ascii-converter/)** 🧘 - Transform text and images into beautiful ASCII art
+- **[ASCII Art Converter](https://github.com/VipranshOjha/DigitalZen/tree/main/ASCII%20Art%20Converter)** 🧘 - Transform text and images into beautiful ASCII art
 
 *More projects coming as I find my digital zen...*
 
