@@ -1,5 +1,9 @@
 # 🔢 Ulam Spiral Generator
 
+## 🧘 Zen Level: 1-2 hours
+*A mindful dive into math and patterns*
+
+## Overview
 The **Ulam Spiral Generator** creates a fascinating mathematical visualization known as the **Ulam Spiral** — a graphical depiction of prime numbers arranged in a spiral pattern. This project generates an `n x n` grid (odd-sized), places numbers in a spiral starting from the center, and marks prime numbers with `*` while non-primes are shown as `.`.  
 
 ---
