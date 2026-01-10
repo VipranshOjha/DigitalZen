@@ -7,6 +7,12 @@ A small, intentional web app that helps developers check in with their mental an
 
 ---
 
+🚀 Live demo
+
+https://developer-mood-tracker.vercel.app
+
+---
+
 ## 🌱 Why this project exists
 
 This app was built as a **warm-up project after a long break from coding**.
