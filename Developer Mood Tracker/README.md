@@ -7,7 +7,7 @@ A small, intentional web app that helps developers check in with their mental an
 
 ---
 
-🚀 Live demo
+## 🚀 Live demo
 
 https://developer-mood-tracker.vercel.app
 
