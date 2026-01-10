@@ -1,6 +1,6 @@
 # 🔢 Ulam Spiral Generator
 
-## 🧘 Zen Level: 1-2 hours
+## 🧘 Zen Level: 2-3 hours
 *A mindful dive into math and patterns*
 
 ## Overview
