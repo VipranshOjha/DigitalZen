@@ -30,6 +30,9 @@ Each project is tagged with its complexity and time commitment:
 - **[Developer Mood Tracker](https://github.com/VipranshOjha/DigitalZen/tree/main/Developer-Mood-Tracker)** 🧘🧘  
   A gentle check-in tool to regain flow, motivation, and coding rhythm
 
+- **[Roast Button](https://github.com/VipranshOjha/DigitalZen/tree/main/Roast%20Button)** 🧘  
+  A playful desktop app that slowly roasts you for clicking a button — until it runs away and self-destructs
+
 *More projects coming as I find my digital zen...*
 
 ## Contributing to Your Own Zen
