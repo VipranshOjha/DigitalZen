@@ -1,6 +1,6 @@
-## 🔘 Roast Button
+# 🔘 Roast Button
 
-🧘 **Zen Level: Beginner (1–2 hours)**  
+## 🧘 **Zen Level: Beginner (1–2 hours)**  
 A playful, low-effort build meant purely for amusement and mental release.
 
 A tiny desktop app that slowly roasts you the more you interact with it — until it decides it has had enough.
