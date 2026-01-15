@@ -30,7 +30,7 @@ Each project is tagged with its complexity and time commitment:
 - **[Roast Button](https://github.com/VipranshOjha/DigitalZen/tree/main/Roast%20Button)** 🧘  
   A playful desktop app that slowly roasts you for clicking a button — until it runs away and self-destructs
 
-- **[TrustMeBro AI](https://github.com/VipranshOjha/DigitalZen/tree/main/TrustMeBro%20AI)** 🧘  
+- **[TrustMeBro AI](https://github.com/VipranshOjha/DigitalZen/tree/main/TrustMeBro%20AI)** 🧘🧘  
   An intentionally overconfident AI chatbot that delivers authoritative nonsense — a playful exploration of prompt engineering, fast inference, and not taking code too seriously
 
 *More projects coming as I find my digital zen...*
