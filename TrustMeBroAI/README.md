@@ -1,6 +1,6 @@
 # 🤖 TrustMeBro AI
 
-## 🧘 Zen Level: 1–2 hours  
+## 🧘 Zen Level: Intermediate (Half day) 
 *Low effort, high amusement, zero reliability*
 
 ## Overview
