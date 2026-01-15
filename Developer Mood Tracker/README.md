@@ -1,6 +1,6 @@
-## 🧠 Developer Mood Tracker
+# 🧠 Developer Mood Tracker
 
-🧘🧘 **Zen Level: Intermediate (Half day)**  
+## 🧘🧘 **Zen Level: Intermediate (Half day)**  
 A steady, focused build to regain flow after a break.
 
 A small, intentional web app that helps developers check in with their mental and coding state — and respond with the right motivation, music, and a gentle coding nudge.
