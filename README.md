@@ -18,20 +18,20 @@ Each project is tagged with its complexity and time commitment:
 
 ## Current Projects
 
-### Text Art 📝
 - **[ASCII Art Converter](https://github.com/VipranshOjha/DigitalZen/tree/main/ASCII%20Art%20Converter)** 🧘  
   Transform text and images into beautiful ASCII art
 
-### Math & Patterns 🔢
 - **[Ulam Spiral Generator](https://github.com/VipranshOjha/DigitalZen/tree/main/Ulam%20Spiral%20Generator)** 🧘  
   A mindful dive into prime numbers and mathematical patterns
 
-### Mental Reset 🧠
 - **[Developer Mood Tracker](https://github.com/VipranshOjha/DigitalZen/tree/main/Developer-Mood-Tracker)** 🧘🧘  
   A gentle check-in tool to regain flow, motivation, and coding rhythm
 
 - **[Roast Button](https://github.com/VipranshOjha/DigitalZen/tree/main/Roast%20Button)** 🧘  
   A playful desktop app that slowly roasts you for clicking a button — until it runs away and self-destructs
+
+- **[TrustMeBro AI](https://github.com/VipranshOjha/DigitalZen/tree/main/TrustMeBro%20AI)** 🧘  
+  An intentionally overconfident AI chatbot that delivers authoritative nonsense — a playful exploration of prompt engineering, fast inference, and not taking code too seriously
 
 *More projects coming as I find my digital zen...*
 
