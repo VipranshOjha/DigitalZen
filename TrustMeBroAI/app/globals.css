@@ -1,0 +1,184 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  background: #0f0f0f;
+  color: white;
+  margin: 0;
+}
+
+.container {
+  max-width: 720px;
+  height: 100vh;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 16px;
+  font-size: 22px;
+  font-weight: bold;
+  border-bottom: 1px solid #222;
+  background: #0f0f0f; /* Sticky header feel */
+}
+
+.header span {
+  display: block;
+  font-size: 12px;
+  color: #888;
+}
+
+.chat {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column; /* Stacks bubbles correctly */
+}
+
+/* --- NEW BUBBLE STYLES WITH BOUNCE --- */
+
+@keyframes popBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bubble-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  max-width: 85%;
+  /* The Bounce Magic: */
+  animation: popBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bubble-container.user {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.bubble-container.ai {
+  margin-right: auto;
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  border: 1px solid #444;
+}
+
+.bubble-content {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  overflow-wrap: break-word;
+}
+
+/* Colors */
+.bubble-container.user .bubble-content {
+  background: #2563eb;
+  color: white;
+  border-top-right-radius: 2px;
+}
+
+.bubble-container.ai .bubble-content {
+  background: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+  border-top-left-radius: 2px;
+}
+
+/* --- MARKDOWN & CODE BLOCKS --- */
+.bubble-content p { margin: 0 0 8px 0; }
+.bubble-content p:last-child { margin: 0; }
+
+.bubble-content code {
+  background: rgba(0,0,0,0.3);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.code-block-wrapper {
+  margin: 10px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #444;
+  background: #0d0d0d;
+}
+
+.code-header {
+  background: #2d2d2d;
+  padding: 5px 12px;
+  font-size: 0.7rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- LOADER & INPUT --- */
+.loader {
+  font-style: italic;
+  color: #666;
+  margin: 10px;
+  font-size: 0.9rem;
+}
+
+.inputBox {
+  display: flex;
+  padding: 16px;
+  background: #0f0f0f;
+  border-top: 1px solid #222;
+}
+
+.inputBox input {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.inputBox input:focus {
+  border-color: #2563eb;
+}
+
+.inputBox button {
+  margin-left: 10px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.1s;
+}
+
+.inputBox button:active {
+  transform: scale(0.95);
+}
