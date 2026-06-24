@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ripple Garden – A peaceful interactive digital pond. Click to create beautiful water ripples. A meditative generative art experience." />
+  <title>Ripple Garden · Interactive Water Ripples</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Main Canvas -->
+  <canvas id="garden-canvas"></canvas>
+
+  <!-- Floating UI Controls -->
+  <div id="ui-overlay">
+
+    <!-- Top Bar -->
+    <header id="top-bar">
+      <div id="logo">
+        <span id="logo-text">Ripple Garden</span>
+        <span id="logo-icon">🪷</span>
+      </div>
+      <nav id="controls-bar">
+        <button class="ctrl-btn" id="btn-theme" title="Switch Theme (T)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <span>Theme</span>
+        </button>
+        <button class="ctrl-btn" id="btn-palette" title="Color Palette (P)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="8" cy="10" r="1.5" fill="currentColor"/><circle cx="14" cy="8" r="1.5" fill="currentColor"/><circle cx="16" cy="14" r="1.5" fill="currentColor"/><circle cx="10" cy="16" r="1.5" fill="currentColor"/></svg>
+          <span>Palette</span>
+        </button>
+        <button class="ctrl-btn" id="btn-audio" title="Ambient Audio (A)">
+          <!-- Speaker ON icon -->
+          <svg id="audio-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <!-- Speaker MUTED icon -->
+          <svg id="audio-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          <span>Audio</span>
+        </button>
+        <button class="ctrl-btn" id="btn-clear" title="Clear Canvas (Space)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <span>Clear</span>
+        </button>
+        <button class="ctrl-btn" id="btn-screenshot" title="Screenshot (S)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>Save</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Palette Panel -->
+    <div id="palette-panel" class="panel hidden">
+      <div class="panel-title">Ripple Palette</div>
+      <div id="palette-options">
+        <button class="palette-btn active" data-palette="aurora">
+          <span class="palette-preview aurora-preview"></span>Aurora
+        </button>
+        <button class="palette-btn" data-palette="sunset">
+          <span class="palette-preview sunset-preview"></span>Sunset
+        </button>
+        <button class="palette-btn" data-palette="sakura">
+          <span class="palette-preview sakura-preview"></span>Sakura
+        </button>
+        <button class="palette-btn" data-palette="emerald">
+          <span class="palette-preview emerald-preview"></span>Emerald
+        </button>
+      </div>
+    </div>
+
+    <!-- Theme Panel -->
+    <div id="theme-panel" class="panel hidden">
+      <div class="panel-title">Pond Theme</div>
+      <div id="theme-options">
+        <button class="theme-btn active" data-theme="night">
+          <span class="theme-swatch night-swatch"></span>Night Pond
+        </button>
+        <button class="theme-btn" data-theme="dawn">
+          <span class="theme-swatch dawn-swatch"></span>Dawn Pond
+        </button>
+      </div>
+    </div>
+
+    <!-- Audio Panel — volume control -->
+    <div id="audio-panel" class="panel hidden">
+      <div class="panel-title">Soundscape</div>
+
+      <!-- Master toggle row -->
+      <div class="audio-row audio-toggle-row">
+        <span class="audio-label">Ambient Sound</span>
+        <button id="audio-toggle-btn" class="audio-pill">Off</button>
+      </div>
+
+      <!-- Volume slider row (always visible so user can pre-set before enabling) -->
+      <div class="audio-row">
+        <label class="audio-label" for="volume-slider">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="audio-row-icon"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          Volume
+        </label>
+        <div class="slider-wrap">
+          <input type="range" id="volume-slider" class="vol-slider"
+                 min="0" max="100" value="25" step="1" />
+          <span id="volume-display" class="vol-value">25%</span>
+        </div>
+      </div>
+
+      <!-- Layer info (decorative, non-interactive) -->
+      <div class="audio-layers">
+        <div class="audio-layer-item">
+          <span class="layer-dot layer-dot--ambient"></span>
+          <span class="layer-label">Pond ambience</span>
+        </div>
+        <div class="audio-layer-item">
+          <span class="layer-dot layer-dot--ripple"></span>
+          <span class="layer-label">Water ripple sounds</span>
+        </div>
+        <div class="audio-layer-item">
+          <span class="layer-dot layer-dot--chime"></span>
+          <span class="layer-label">Distant wind chimes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hint Bar -->
+    <footer id="hint-bar">
+      <span id="hint-left">🖱 Click anywhere to create ripples</span>
+      <span id="hint-right">Space · Clear &nbsp;|&nbsp; S · Save &nbsp;|&nbsp; T · Theme &nbsp;|&nbsp; P · Palette &nbsp;|&nbsp; A · Audio</span>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast"></div>
+
+  <!-- JavaScript Modules (load order matters) -->
+  <script src="js/theme-manager.js"></script>
+  <script src="js/ripple-system.js"></script>
+  <script src="js/particle-system.js"></script>
+  <script src="js/flower-system.js"></script>
+  <script src="js/audio-manager.js"></script>
+  <script src="js/screenshot.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

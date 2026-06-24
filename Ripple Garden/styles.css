@@ -1,0 +1,489 @@
+/* ============================================================
+   Ripple Garden — Global Styles
+   ============================================================ */
+
+/* ---------- CSS Custom Properties (Tokens) ---------- */
+:root {
+  /* Night Pond (default) */
+  --bg-deep:        #020818;
+  --bg-mid:         #04122e;
+  --bg-surface:     #081a40;
+  --accent-primary: #7c3aed;
+  --accent-glow:    #a855f7;
+  --text-primary:   rgba(255,255,255,0.92);
+  --text-muted:     rgba(255,255,255,0.45);
+  --ui-bg:          rgba(4,10,30,0.72);
+  --ui-border:      rgba(124,58,237,0.25);
+  --ui-hover:       rgba(124,58,237,0.18);
+  --btn-glow:       rgba(168,85,247,0.4);
+
+  /* Transitions */
+  --theme-transition: background 0.7s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Dawn Pond theme overrides */
+[data-theme="dawn"] {
+  --bg-deep:        #071520;
+  --bg-mid:         #0d2b3e;
+  --bg-surface:     #123650;
+  --accent-primary: #0ea5e9;
+  --accent-glow:    #38bdf8;
+  --ui-bg:          rgba(7,21,32,0.72);
+  --ui-border:      rgba(14,165,233,0.25);
+  --ui-hover:       rgba(14,165,233,0.18);
+  --btn-glow:       rgba(56,189,248,0.4);
+}
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  cursor: crosshair;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Canvas ---------- */
+#garden-canvas {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* ---------- UI Overlay ---------- */
+#ui-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ---------- Top Bar ---------- */
+#top-bar {
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--ui-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--ui-border);
+  transition: var(--theme-transition);
+}
+
+#logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  font-style: italic;
+  background: linear-gradient(135deg, var(--accent-glow) 0%, #f0abfc 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.02em;
+}
+
+#logo-icon {
+  font-size: 1.3rem;
+  filter: drop-shadow(0 0 6px rgba(240,171,252,0.7));
+}
+
+#controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---------- Control Buttons ---------- */
+.ctrl-btn {
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--ui-border);
+  border-radius: 9px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.ctrl-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  stroke: var(--accent-glow);
+  transition: stroke 0.2s ease;
+}
+
+.ctrl-btn:hover {
+  background: var(--ui-hover);
+  border-color: var(--accent-glow);
+  box-shadow: 0 0 14px var(--btn-glow);
+  transform: translateY(-1px);
+}
+
+.ctrl-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.ctrl-btn.active-state {
+  background: var(--ui-hover);
+  border-color: var(--accent-glow);
+  box-shadow: 0 0 12px var(--btn-glow);
+}
+
+/* ---------- Panels ---------- */
+.panel {
+  pointer-events: all;
+  /* Fixed so JS can place them anywhere via inline left/top */
+  position: fixed;
+  background: var(--ui-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+  padding: 16px;
+  min-width: 180px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transform-origin: top left;
+  transition: opacity 0.18s ease, transform 0.18s ease, var(--theme-transition);
+  z-index: 50;
+}
+
+.panel.hidden {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.96);
+  pointer-events: none;
+}
+
+.panel-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* ---------- Theme Options ---------- */
+#theme-options, #palette-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.theme-btn, .palette-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  text-align: left;
+}
+
+.theme-btn:hover, .palette-btn:hover {
+  background: var(--ui-hover);
+  border-color: var(--ui-border);
+}
+
+.theme-btn.active, .palette-btn.active {
+  background: var(--ui-hover);
+  border-color: var(--accent-glow);
+  box-shadow: 0 0 10px var(--btn-glow);
+}
+
+/* Theme Swatches */
+.theme-swatch, .palette-preview {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+
+.night-swatch  { background: radial-gradient(circle at 40% 40%, #a855f7, #020818); }
+.dawn-swatch   { background: radial-gradient(circle at 40% 40%, #38bdf8, #f59e0b); }
+
+/* Palette previews */
+.aurora-preview  { background: linear-gradient(135deg, #06b6d4, #6366f1, #a855f7); }
+.sunset-preview  { background: linear-gradient(135deg, #f97316, #eab308, #ec4899); }
+.sakura-preview  { background: linear-gradient(135deg, #f472b6, #c084fc, #f8fafc); }
+.emerald-preview { background: linear-gradient(135deg, #10b981, #14b8a6, #22d3ee); }
+
+/* ---------- Hint Bar ---------- */
+#hint-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: var(--ui-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid var(--ui-border);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: var(--theme-transition);
+  pointer-events: none;
+}
+
+#hint-left  { font-style: italic; }
+#hint-right { letter-spacing: 0.04em; }
+
+/* ---------- Toast ---------- */
+#toast {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--ui-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  padding: 9px 22px;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 100;
+  white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .ctrl-btn span { display: none; }
+  .ctrl-btn { padding: 8px 10px; }
+  #hint-right { display: none; }
+  #logo-text { font-size: 1rem; }
+  /* Panel positions are handled by JS boundary clamping on small screens */
+}
+
+/* ---------- Smooth Theme Transition on Body ---------- */
+body, #top-bar, #hint-bar, .panel, .ctrl-btn {
+  transition: background 0.6s ease, border-color 0.5s ease, box-shadow 0.4s ease, color 0.4s ease;
+}
+
+/* ============================================================
+   Audio Panel Styles
+   ============================================================ */
+
+/* ── Rows inside the audio panel ─────────────────────────── */
+.audio-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.audio-toggle-row {
+  margin-bottom: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.audio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.audio-row-icon {
+  width: 13px;
+  height: 13px;
+  stroke: var(--accent-glow);
+  flex-shrink: 0;
+}
+
+/* ── Toggle pill button ──────────────────────────────────── */
+.audio-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--ui-border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease,
+              color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.audio-pill:hover {
+  background: var(--ui-hover);
+  border-color: var(--ui-border);
+}
+
+.audio-pill.is-on {
+  background: var(--ui-hover);
+  border-color: var(--accent-glow);
+  color: var(--accent-glow);
+  box-shadow: 0 0 10px var(--btn-glow);
+}
+
+/* ── Volume slider ───────────────────────────────────────── */
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ui-border);
+  outline: none;
+  cursor: pointer;
+  /* Filled portion is handled via JS inline style on the track background */
+  background-image: linear-gradient(var(--accent-glow), var(--accent-glow));
+  background-size: 25% 100%; /* default 25% filled = 25% master vol */
+  background-repeat: no-repeat;
+  transition: background-color 0.2s ease;
+}
+
+.vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--btn-glow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vol-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 12px var(--btn-glow);
+}
+
+.vol-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent-glow);
+  cursor: pointer;
+  box-shadow: 0 0 6px var(--btn-glow);
+}
+
+.vol-slider::-moz-range-progress {
+  background: var(--accent-glow);
+  border-radius: 2px;
+  height: 4px;
+}
+
+.vol-value {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 32px;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
+/* ── Layer indicator dots ────────────────────────────────── */
+.audio-layers {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-border);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.audio-layer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.layer-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.layer-dot--ambient { background: #38bdf8; box-shadow: 0 0 5px #38bdf8; }
+.layer-dot--ripple  { background: #a78bfa; box-shadow: 0 0 5px #a78bfa; }
+.layer-dot--chime   { background: #fcd34d; box-shadow: 0 0 5px #fcd34d; }
+
+.layer-label {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+}
+
+/* ── Audio panel width ───────────────────────────────────── */
+#audio-panel {
+  min-width: 240px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .vol-slider { width: 80px; }
+  #audio-panel { min-width: 210px; }
+}
+
