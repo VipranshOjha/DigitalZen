@@ -17,6 +17,13 @@ Ripple Garden was built as a reminder that not every project needs to solve a pr
 
 ---
 
+## 🚀 Live demo
+
+[https://developer-mood-tracker.vercel.app
+](https://digital-zen-wheat.vercel.app/)
+
+---
+
 ## 🌱 Why this project exists
 
 Most of my time is spent building systems, dashboards, models, and applications with very clear goals.

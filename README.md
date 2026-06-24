@@ -33,6 +33,10 @@ Each project is tagged with its complexity and time commitment:
 - **[TrustMeBro AI](https://github.com/VipranshOjha/DigitalZen/tree/main/TrustMeBro%20AI)** 🧘🧘  
   An intentionally overconfident AI chatbot that delivers authoritative nonsense — a playful exploration of prompt engineering, fast inference, and not taking code too seriously
 
+
+- **[Ripple Garden](https://github.com/VipranshOjha/DigitalZen/tree/main/Ripple%20Garden)** 🧘🧘🧘  
+  A peaceful interactive digital pond where ripples, flowers, and ambient sound create a calming generative art experience
+
 *More projects coming as I find my digital zen...*
 
 ## Contributing to Your Own Zen
