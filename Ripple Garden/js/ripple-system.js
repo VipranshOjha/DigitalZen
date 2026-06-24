@@ -1,5 +1,5 @@
-/* ============================================================
-   ripple-system.js  (v2 — optimized)
+/*
+   ripple-system.js
    Key optimizations:
    · Object pool — no per-click allocation
    · RGB cached at spawn time — no per-frame hex parsing
@@ -7,7 +7,7 @@
    · Single ctx.save/restore wrapping entire ripple pass
    · Adaptive quality tiers based on active ripple count
    · Swap-and-pop removal — O(1) instead of O(n) splice
-   ============================================================ */
+*/
 
 class RippleSystem {
   constructor(canvas, ctx) {
@@ -75,8 +75,6 @@ class RippleSystem {
     ) * 0.42; // upper bound of (0.18 + 0.22) * dimension
   }
 
-  /* ── Palette API ──────────────────────────────────────────── */
-
   setPalette(name) {
     if (this.palettes[name]) this.currentPalette = name;
   }
@@ -94,8 +92,6 @@ class RippleSystem {
     return palette[Math.floor(Math.random() * palette.length)];
   }
 
-  /* ── Object Pool ──────────────────────────────────────────── */
-
   _acquire() {
     return this._pool.length > 0 ? this._pool.pop() : {};
   }
@@ -103,8 +99,6 @@ class RippleSystem {
   _release(r) {
     this._pool.push(r);
   }
-
-  /* ── Public API ───────────────────────────────────────────── */
 
   /**
    * Spawn a ripple at (x, y). Uses pool to avoid allocation.
@@ -146,8 +140,6 @@ class RippleSystem {
     }, 380);
   }
 
-  /* ── Update ───────────────────────────────────────────────── */
-
   update() {
     const ripples = this.ripples;
     let i = ripples.length;
@@ -170,14 +162,11 @@ class RippleSystem {
     }
   }
 
-  /* ── Draw ─────────────────────────────────────────────────── */
-
   draw() {
     const ctx     = this.ctx;
     const count   = this.ripples.length;
     if (count === 0) return;
 
-    // ── Adaptive quality tiers ─────────────────────────────────
     // Reduce visual complexity proportionally as ripple count grows.
     let maxRings, glowWidth, showBloom;
     if (count < 50) {
@@ -217,14 +206,14 @@ class RippleSystem {
         const ringAlpha = baseAlpha * (1 - ring * 0.28);
         const lineWidth = Math.max(0.4, 2.5 - ring * 0.7);
 
-        // ── Soft glow: wide low-opacity stroke (no gradient, no shadowBlur) ──
+        // Soft glow: wide low-opacity stroke
         ctx.beginPath();
         ctx.arc(r.x, r.y, ringRadius, 0, 6.2831853); // 2π pre-computed
         ctx.strokeStyle = `rgba(${rgb},${(ringAlpha * 0.18).toFixed(3)})`;
         ctx.lineWidth   = glowWidth;
         ctx.stroke();
 
-        // ── Crisp ring line ────────────────────────────────────
+        // Crisp ring line
         ctx.beginPath();
         ctx.arc(r.x, r.y, ringRadius, 0, 6.2831853);
         ctx.strokeStyle = `rgba(${rgb},${(ringAlpha * 0.88).toFixed(3)})`;
@@ -232,7 +221,7 @@ class RippleSystem {
         ctx.stroke();
       }
 
-      // ── Central bloom (birth flash) ────────────────────────
+      // Central bloom (birth flash)
       if (showBloom && progress < 0.25) {
         const bloomAlpha = (1 - progress / 0.25) * baseAlpha * 0.55;
         const bloomSize  = 14 + progress * 30;

@@ -1,9 +1,9 @@
-/* ============================================================
+/*
    theme-manager.js
    Manages visual themes — Night Pond & Dawn Pond.
    Updates CSS variables on the document root and fires a
    custom 'themechange' event so other systems can adapt.
-   ============================================================ */
+*/
 
 class ThemeManager {
   constructor() {

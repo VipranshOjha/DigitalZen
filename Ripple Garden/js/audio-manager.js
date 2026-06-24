@@ -1,108 +1,80 @@
-/* ============================================================
-   audio-manager.js  (v3 — full layered soundscape)
-
+/*
+   audio-manager.js
+   
    Architecture — three independent layers:
-   ┌─────────────────────────────────────────────────────────┐
-   │ Layer 1 · Ambient Pond   (loops forever, 20% vol)       │
-   │   calm-pond-bright-wind-in-reeds-geese-water-ttp-...mp3 │
-   ├─────────────────────────────────────────────────────────┤
-   │ Layer 2 · Ripple Sound   (pool of 10 elements, 12% vol) │
-   │   soul_serenity_sounds-water-noises-241049.mp3          │
-   │   • triggered on every click                            │
-   │   • max 1–2 s playback, random start offset 0–0.25 s   │
-   ├─────────────────────────────────────────────────────────┤
-   │ Layer 3 · Chime Events   (random 45–120 s, 10% vol)     │
-   │   freesound_community-wind-chimes-25332.mp3             │
-   │   freesound_community-windchime1-7065.mp3               │
-   │   • random file selection per event                     │
-   │   • plays once, never loops                             │
-   └─────────────────────────────────────────────────────────┘
-
+   Layer 1: Ambient Pond (loops forever, 20% vol)
+   Layer 2: Ripple Sound (pool of 10 elements, 12% vol)
+   Layer 3: Chime Events (random 45–120 s, 10% vol)
+   
    Browser unlock:
-   · All browsers block autoplay until a user gesture.
-   · We listen for the first click/keydown/touchstart to
-     create an AudioContext (if used) and mark the system
-     as "unlocked". Layers only start after unlock.
-
+   All browsers block autoplay until a user gesture. Listen for the first
+   click/keydown/touchstart to mark the system as "unlocked". Layers only start after unlock.
+   
    Volume architecture:
-   · masterVolume  (0–1)  — user-controlled via slider
-   · Each layer has its own base level that gets multiplied
-     by masterVolume for the final .volume property.
-   ============================================================ */
+   Each layer has its own base level that gets multiplied by masterVolume.
+*/
 
 class AudioManager {
   constructor() {
-    /* ── State ──────────────────────────────────────────────── */
-    this.enabled       = false;   // master on/off
-    this.unlocked      = false;   // browser autoplay unlocked?
-    this.masterVolume  = 0.25;    // 0..1  (default 25%)
+    this.enabled = true;
+    this.unlocked = false;
+    this.masterVolume = 0.25;
 
-    /* ── Layer base volumes (before master multiply) ────────── */
     this._BASE_AMBIENT = 0.20;
-    this._BASE_RIPPLE  = 0.12;
-    this._BASE_CHIME   = 0.10;
+    this._BASE_RIPPLE = 0.12;
+    this._BASE_CHIME = 0.10;
 
-    /* ── Asset paths ────────────────────────────────────────── */
     this._PATHS = {
       ambient: 'assets/audio/freesound_community-calm-pond-bright-wind-in-reeds-geese-water-ttp-190401-55746.mp3',
-      ripple:  'assets/audio/soul_serenity_sounds-water-noises-241049.mp3',
-      chimes:  [
+      ripple: 'assets/audio/soul_serenity_sounds-water-noises-241049.mp3',
+      chimes: [
         'assets/audio/freesound_community-wind-chimes-25332.mp3',
         'assets/audio/freesound_community-windchime1-7065.mp3',
       ],
     };
 
-    /* ── Layer 1 — Ambient ──────────────────────────────────── */
-    this._ambient       = new Audio();
-    this._ambient.src   = this._PATHS.ambient;
-    this._ambient.loop  = true;
+    this._ambient = new Audio();
+    this._ambient.src = this._PATHS.ambient;
+    this._ambient.loop = true;
     this._ambient.preload = 'none';
-    this._ambient.volume  = this._effectiveVolume(this._BASE_AMBIENT);
+    this._ambient.volume = this._effectiveVolume(this._BASE_AMBIENT);
 
-    /* ── Layer 2 — Ripple pool ──────────────────────────────── */
-    this._POOL_SIZE   = 10;
-    this._ripplePool  = [];
-    this._poolIdx     = 0;
+    this._POOL_SIZE = 10;
+    this._ripplePool = [];
+    this._poolIdx = 0;
     this._RIPPLE_DURATION = 1.8; // max seconds of playback per trigger
 
     for (let i = 0; i < this._POOL_SIZE; i++) {
-      const el    = new Audio();
-      el.src      = this._PATHS.ripple;
-      el.preload  = 'none';
-      el.volume   = this._effectiveVolume(this._BASE_RIPPLE);
+      const el = new Audio();
+      el.src = this._PATHS.ripple;
+      el.preload = 'none';
+      el.volume = this._effectiveVolume(this._BASE_RIPPLE);
       this._ripplePool.push(el);
     }
 
-    /* ── Layer 3 — Chimes ───────────────────────────────────── */
     // Two pre-loaded chime elements (one per file) to avoid allocation per event
     this._chimeEls = this._PATHS.chimes.map(src => {
-      const el   = new Audio();
-      el.src     = src;
+      const el = new Audio();
+      el.src = src;
       el.preload = 'none';
-      el.loop    = false;
-      el.volume  = this._effectiveVolume(this._BASE_CHIME);
+      el.loop = false;
+      el.volume = this._effectiveVolume(this._BASE_CHIME);
       return el;
     });
-    this._chimeTimer    = null;
-    this._chimeEnabled  = false;
+    this._chimeTimer = null;
+    this._chimeEnabled = false;
 
-    /* ── Fade tracking ──────────────────────────────────────── */
     this._ambientFadeRAF = null;
-    this._ambientTarget  = 0;   // target volume for current fade
+    this._ambientTarget = 0;
 
-    /* ── Browser unlock ─────────────────────────────────────── */
     this._unlockHandler = this._unlock.bind(this);
     ['click', 'touchstart', 'keydown'].forEach(evt =>
       document.addEventListener(evt, this._unlockHandler, { once: false, capture: true, passive: true })
     );
   }
 
-  /* ────────────────────────────────────────────────────────────
-     BROWSER UNLOCK
-     Modern browsers require a user gesture before audio plays.
-     We listen on capture phase so we catch the very first event
-     regardless of where it lands.
-  ──────────────────────────────────────────────────────────── */
+  // Modern browsers require a user gesture before audio plays.
+  // We listen on capture phase so we catch the very first event.
   _unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
@@ -111,35 +83,36 @@ class AudioManager {
     this._ambient.load();
     this._ripplePool.forEach(el => el.load());
 
+    if (this.enabled) {
+      this._startAll();
+    }
+
     // Remove listeners — no longer needed
     ['click', 'touchstart', 'keydown'].forEach(evt =>
       document.removeEventListener(evt, this._unlockHandler, { capture: true })
     );
   }
 
-  /* ────────────────────────────────────────────────────────────
-     MASTER TOGGLE
-     Called by the Audio button / A key.
-     Returns the new enabled state.
-  ──────────────────────────────────────────────────────────── */
   toggle() {
     this.enabled = !this.enabled;
     if (this.enabled) {
-      this._startAll();
+      if (this.unlocked) {
+        this._startAll();
+      }
     } else {
       this._stopAll();
     }
     return this.enabled;
   }
 
-  /* ── Start everything ───────────────────────────────────── */
   _startAll() {
     this._startAmbient();
     this._chimeEnabled = true;
-    this._scheduleChime();
+    if (!this._chimeTimer) {
+      this._scheduleChime();
+    }
   }
 
-  /* ── Stop everything ────────────────────────────────────── */
   _stopAll() {
     this._fadeAmbient(0, 2000, () => {
       this._ambient.pause();
@@ -156,15 +129,12 @@ class AudioManager {
     });
   }
 
-  /* ────────────────────────────────────────────────────────────
-     LAYER 1 — AMBIENT POND
-  ──────────────────────────────────────────────────────────── */
   _startAmbient() {
     const targetVol = this._effectiveVolume(this._BASE_AMBIENT);
 
     // Start from 0 and fade in
     this._ambient.volume = 0;
-    this._ambientTarget  = targetVol;
+    this._ambientTarget = targetVol;
 
     const playPromise = this._ambient.play();
     if (playPromise !== undefined) {
@@ -188,9 +158,9 @@ class AudioManager {
   _fadeAmbient(targetVol, durationMs, onDone) {
     if (this._ambientFadeRAF) cancelAnimationFrame(this._ambientFadeRAF);
 
-    const startVol  = this._ambient.volume;
+    const startVol = this._ambient.volume;
     const startTime = performance.now();
-    const delta     = targetVol - startVol;
+    const delta = targetVol - startVol;
 
     if (Math.abs(delta) < 0.001) {
       this._ambient.volume = targetVol;
@@ -199,10 +169,10 @@ class AudioManager {
     }
 
     const tick = (now) => {
-      const elapsed  = now - startTime;
+      const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / durationMs);
       // Ease-in-out cubic
-      const ease     = progress < 0.5
+      const ease = progress < 0.5
         ? 4 * progress * progress * progress
         : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
@@ -220,10 +190,7 @@ class AudioManager {
     this._ambientFadeRAF = requestAnimationFrame(tick);
   }
 
-  /* ────────────────────────────────────────────────────────────
-     LAYER 2 — RIPPLE INTERACTION SOUNDS
-     Called by main.js on every click that creates a ripple.
-  ──────────────────────────────────────────────────────────── */
+  // Called by main.js on every click that creates a ripple.
   triggerRippleSound() {
     if (!this.enabled || !this.unlocked) return;
 
@@ -241,7 +208,7 @@ class AudioManager {
 
     const playPromise = el.play();
     if (playPromise !== undefined) {
-      playPromise.catch(() => {}); // silently ignore race conditions
+      playPromise.catch(() => { }); // silently ignore race conditions
     }
 
     // Auto-stop after RIPPLE_DURATION seconds to avoid long tail
@@ -258,9 +225,9 @@ class AudioManager {
    */
   _fadeRippleEl(el) {
     const startVol = el.volume;
-    const steps    = 10;
+    const steps = 10;
     const stepTime = 40; // 10 × 40ms = 400ms fade
-    let   step     = 0;
+    let step = 0;
 
     const fade = () => {
       step++;
@@ -275,9 +242,6 @@ class AudioManager {
     fade();
   }
 
-  /* ────────────────────────────────────────────────────────────
-     LAYER 3 — AMBIENT CHIME EVENTS
-  ──────────────────────────────────────────────────────────── */
   _scheduleChime() {
     if (!this._chimeEnabled) return;
 
@@ -301,12 +265,8 @@ class AudioManager {
     }
 
     el.volume = this._effectiveVolume(this._BASE_CHIME);
-    el.play().catch(() => {});
+    el.play().catch(() => { });
   }
-
-  /* ────────────────────────────────────────────────────────────
-     VOLUME CONTROL
-  ──────────────────────────────────────────────────────────── */
 
   /**
    * Compute effective volume for a layer, applying master multiplier.

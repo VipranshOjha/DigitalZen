@@ -1,8 +1,8 @@
-/* ============================================================
+/*
    particle-system.js
    Floating lotus petal particles that drift gently across
    the screen with organic movement and screen wrapping.
-   ============================================================ */
+*/
 
 class ParticleSystem {
   constructor(canvas, ctx) {

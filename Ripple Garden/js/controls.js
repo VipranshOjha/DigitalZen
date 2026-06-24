@@ -1,13 +1,8 @@
-/* ============================================================
-   controls.js  (v3 — with layered audio panel)
-   Changes from v2:
-   · Audio button now opens an audio panel (not a bare toggle)
-   · Audio panel contains: master toggle pill + volume slider
-   · Volume slider drives AudioManager.setMasterVolume()
-   · A key still toggles the full audio system on/off
-   · Panel panel-close logic extended to 'audio' panel name
-   · All previous optimisations preserved
-   ============================================================ */
+/*
+   controls.js
+   Handles UI events, button clicks, panels, keyboard shortcuts, and delegates
+   actions to the respective system managers.
+*/
 
 class Controls {
   constructor({ themeManager, rippleSystem, audioManager, screenshotManager, toastFn }) {
@@ -17,10 +12,9 @@ class Controls {
     this.screenshot = screenshotManager;
     this.toast      = toastFn;
 
-    this._activePanel = null; // 'theme' | 'palette' | 'audio' | null
-    this._audioOn     = false;
+    this._activePanel = null;
+    this._audioOn     = this.audio.isEnabled();
 
-    // Cache all DOM references once — never query inside event handlers
     this._els = {
       btnTheme:       document.getElementById('btn-theme'),
       btnPalette:     document.getElementById('btn-palette'),
@@ -39,13 +33,28 @@ class Controls {
       paletteBtns:    Array.from(document.querySelectorAll('.palette-btn')),
     };
 
+    // Initialize UI state
+    this._syncAudioUI();
+
     this._bindButtons();
     this._bindKeyboard();
     this._bindPanelClose();
     this._bindVolumeSlider();
   }
 
-  /* ── Button Bindings ─────────────────────────────────────── */
+  _syncAudioUI() {
+    const { audioIconOn, audioIconOff, btnAudio, audioToggleBtn } = this._els;
+    if (audioIconOn)  audioIconOn.style.display  = this._audioOn ? 'block' : 'none';
+    if (audioIconOff) audioIconOff.style.display = this._audioOn ? 'none'  : 'block';
+    
+    btnAudio?.classList.toggle('active-state', this._audioOn);
+    
+    if (audioToggleBtn) {
+      audioToggleBtn.textContent = this._audioOn ? 'On' : 'Off';
+      audioToggleBtn.classList.toggle('is-on', this._audioOn);
+    }
+  }
+
   _bindButtons() {
     const { btnTheme, btnPalette, btnAudio, btnClear, btnScreenshot } = this._els;
 
@@ -76,13 +85,13 @@ class Controls {
       else      this.toast('❌ Screenshot failed');
     });
 
-    // ── Audio panel: inner toggle pill ───────────────────────
+    // Audio panel: inner toggle pill
     this._els.audioToggleBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
       this._toggleAudio();
     });
 
-    // ── Theme panel option buttons ────────────────────────────
+    // Theme panel option buttons
     this._els.themeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const t = btn.dataset.theme;
@@ -93,7 +102,7 @@ class Controls {
       });
     });
 
-    // ── Palette panel option buttons ──────────────────────────
+    // Palette panel option buttons
     this._els.paletteBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const p = btn.dataset.palette;
@@ -106,7 +115,6 @@ class Controls {
     });
   }
 
-  /* ── Volume Slider ───────────────────────────────────────── */
   _bindVolumeSlider() {
     const slider  = this._els.volumeSlider;
     const display = this._els.volumeDisplay;
@@ -136,29 +144,11 @@ class Controls {
     updateSlider(Math.round(this.audio.getMasterVolume() * 100));
   }
 
-  /* ── Audio toggle (master on/off) ───────────────────────── */
   _toggleAudio() {
-    const on = this.audio.toggle();
-    this._audioOn = on;
-
-    // Update top-bar speaker icon
-    const { audioIconOn, audioIconOff, btnAudio, audioToggleBtn } = this._els;
-    if (audioIconOn)  audioIconOn.style.display  = on ? 'block' : 'none';
-    if (audioIconOff) audioIconOff.style.display = on ? 'none'  : 'block';
-
-    // Update top-bar button glow
-    btnAudio?.classList.toggle('active-state', on);
-
-    // Update the pill inside the audio panel
-    if (audioToggleBtn) {
-      audioToggleBtn.textContent = on ? 'On' : 'Off';
-      audioToggleBtn.classList.toggle('is-on', on);
-    }
-
-    this.toast(on ? '🎵 Soundscape on' : '🔇 Soundscape off');
+    this._audioOn = this.audio.toggle();
+    this._syncAudioUI();
+    this.toast(this._audioOn ? '🎵 Soundscape on' : '🔇 Soundscape off');
   }
-
-  /* ── Panel Management ───────────────────────────────────── */
 
   /**
    * Maps a panel name to its DOM element.
@@ -185,7 +175,7 @@ class Controls {
     const panel = this._panelEl(name);
     if (!panel || !triggerBtn) return;
 
-    // ── Dynamic positioning ───────────────────────────────────
+    // Dynamic positioning
     const btnRect = triggerBtn.getBoundingClientRect();
     const vw      = window.innerWidth;
 
@@ -201,7 +191,6 @@ class Controls {
 
     panel.style.left = `${left}px`;
     panel.style.top  = `${btnRect.bottom + 6}px`;
-    // ─────────────────────────────────────────────────────────
 
     triggerBtn.classList.add('active-state');
 
@@ -240,7 +229,6 @@ class Controls {
     });
   }
 
-  /* ── Keyboard Shortcuts ──────────────────────────────────── */
   _bindKeyboard() {
     document.addEventListener('keydown', (e) => {
       if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
@@ -290,7 +278,6 @@ class Controls {
     });
   }
 
-  /* ── Sync helpers ────────────────────────────────────────── */
   _syncThemeBtns() {
     this._els.themeBtns.forEach(b => {
       b.classList.toggle('active', b.dataset.theme === this.theme.current);

@@ -1,13 +1,12 @@
-/* ============================================================
+/*
    main.js
    Application entry point — bootstraps all systems and runs
    the main animation loop.
-   ============================================================ */
+*/
 
 (function () {
   'use strict';
 
-  /* ── Canvas Setup ─────────────────────────────────────────── */
   const canvas = document.getElementById('garden-canvas');
   const ctx    = canvas.getContext('2d');
 
@@ -34,7 +33,6 @@
     }
   }
 
-  /* ── Background Cache ─────────────────────────────────────── */
   // We pre-render the background onto an offscreen canvas for performance.
   let bgCache       = null;
   let bgCacheWidth  = 0;
@@ -107,7 +105,6 @@
     ctx.fillRect(0, 0, w, h);
   }
 
-  /* ── Systems Initialization ───────────────────────────────── */
   const themeManager     = new ThemeManager();
   const rippleSystem     = new RippleSystem(canvas, ctx);
   const particleSystem   = new ParticleSystem(canvas, ctx);
@@ -146,7 +143,6 @@
     toast:      showToast,
   };
 
-  /* ── Theme Change Listener ────────────────────────────────── */
   document.addEventListener('themechange', (e) => {
     const theme = e.detail.theme;
     particleSystem.setColors(theme.petalColors);
@@ -154,8 +150,6 @@
     _bgDirty = true;
     _buildBackgroundCache();
   });
-
-  /* ── Input — Click & Touch ────────────────────────────────── */
 
   // Idle mode: timestamp of the most recent user interaction (ms)
   let _lastInteraction = performance.now();
@@ -212,7 +206,7 @@
     audioManager.triggerRippleSound();
   });
 
-  /* ── Idle Mode ─────────────────────────────────────────────── */
+  // Idle Mode
   //
   // After IDLE_ONSET ms of no interaction the pond gently breathes:
   // a single quiet ripple appears every IDLE_INTERVAL_MIN..MAX ms.
@@ -251,7 +245,6 @@
     setTimeout(_spawnIdleRipple, nextIn);
   }
 
-  /* ── Main Animation Loop ──────────────────────────────────── */
   let lastTime = 0;
 
   function loop(timestamp) {
@@ -261,7 +254,6 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    // ── 1. Draw background ────────────────────────────────────
     if (bgCache) {
       ctx.drawImage(bgCache, 0, 0, w, h);
     } else {
@@ -269,28 +261,20 @@
       ctx.fillRect(0, 0, w, h);
     }
 
-    // ── 2. Animate subtle background sparkles ─────────────────
     _drawSparkles(ctx, w, h, timestamp);
 
-    // ── 3. Update & draw flowers (below petals & ripples) ─────
     flowerSystem.update();
     flowerSystem.draw();
 
-    // ── 4. Update & draw ripples ──────────────────────────────
     rippleSystem.update();
     rippleSystem.draw();
 
-    // ── 5. Update & draw petals (on top of ripples) ───────────
     particleSystem.update();
     particleSystem.draw();
-
-    // ── 6. FPS counter (dev, hidden) ─────────────────────────
-    // Uncomment to debug: _drawFPS(ctx, dt);
 
     requestAnimationFrame(loop);
   }
 
-  /* ── Sparkle Layer ────────────────────────────────────────── */
   // Pre-generate sparkle positions once
   const SPARKLES = Array.from({ length: 55 }, () => ({
     x:     Math.random(),    // normalized 0..1
@@ -344,17 +328,6 @@
     ctx.restore();
   }
 
-  /* ── Optional FPS Debug ───────────────────────────────────── */
-  // function _drawFPS(ctx, dt) {
-  //   ctx.save();
-  //   ctx.globalAlpha = 0.6;
-  //   ctx.fillStyle = '#fff';
-  //   ctx.font = '12px monospace';
-  //   ctx.fillText(`${Math.round(1000 / dt)} fps | ${rippleSystem.ripples.length} ripples`, 12, 22);
-  //   ctx.restore();
-  // }
-
-  /* ── Boot ─────────────────────────────────────────────────── */
   function init() {
     resizeCanvas();
     _buildBackgroundCache();

@@ -1,8 +1,8 @@
-/* ============================================================
+/*
    flower-system.js
    Decorative lotus flowers that drift slowly and bob gently.
    Rendered procedurally — no images required.
-   ============================================================ */
+*/
 
 class FlowerSystem {
   constructor(canvas, ctx) {
@@ -103,7 +103,7 @@ class FlowerSystem {
     ctx.rotate(f.rotation);
     ctx.globalAlpha = f.opacity;
 
-    // ── Lily pad ──────────────────────────────────────────────
+    // Lily pad
     const padR = s * 1.45;
     const padGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, padR);
     padGrad.addColorStop(0, 'rgba(34,197,94,0.30)');
@@ -131,7 +131,7 @@ class FlowerSystem {
     }
     ctx.globalAlpha = f.opacity;
 
-    // ── Outer petals ──────────────────────────────────────────
+    // Outer petals
     const OUTER = 8;
     for (let i = 0; i < OUTER; i++) {
       const ang = (i / OUTER) * Math.PI * 2;
@@ -156,7 +156,7 @@ class FlowerSystem {
       ctx.restore();
     }
 
-    // ── Inner petals ──────────────────────────────────────────
+    // Inner petals
     const INNER = 5;
     for (let i = 0; i < INNER; i++) {
       const ang = (i / INNER) * Math.PI * 2 + Math.PI / INNER;
@@ -181,7 +181,7 @@ class FlowerSystem {
       ctx.restore();
     }
 
-    // ── Center stamen ─────────────────────────────────────────
+    // Center stamen
     const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, s * 0.28);
     centerGrad.addColorStop(0, '#ffffff');
     centerGrad.addColorStop(0.5, '#fde68a');

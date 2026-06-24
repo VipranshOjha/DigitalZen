@@ -1,8 +1,8 @@
-/* ============================================================
+/*
    screenshot.js
    Exports the current canvas state as a PNG download.
    Filename format: ripple-garden-YYYY-MM-DD.png
-   ============================================================ */
+*/
 
 class ScreenshotManager {
   constructor(canvas) {
