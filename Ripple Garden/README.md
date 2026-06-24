@@ -19,8 +19,7 @@ Ripple Garden was built as a reminder that not every project needs to solve a pr
 
 ## 🚀 Live demo
 
-[https://developer-mood-tracker.vercel.app
-](https://digital-zen-wheat.vercel.app/)
+[(https://digital-zen-wheat.vercel.app/)](https://digital-zen-wheat.vercel.app/)
 
 ---
 
